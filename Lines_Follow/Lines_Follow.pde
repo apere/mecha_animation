@@ -2,7 +2,7 @@ float y;
 
 void setup()
 {
-  size(1000,500);
+  size(1920, 1080);
   y = height/2;
   smooth();
   //noLoop();
@@ -15,7 +15,7 @@ void draw()
   stroke(255,200); 
 
   
-  for(int i = 0; i < 100; i+=20)
+  for(int i = 0; i < 50; i+=40)
   {
   beginShape();
   vertex(0,height);

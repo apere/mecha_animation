@@ -1,8 +1,8 @@
-int num=50, frames = 80;
+int num=35, frames = 80;
 float theta;
 
 void setup() {
-  size(1000, 1000);
+  size(1920, 1080);
   frameRate(90);
 }
 
@@ -13,7 +13,7 @@ void draw() {
   noFill();
 
   for (int i=0; i<num; i++) {
-    float sz = i*45;
+    float sz = i*10;
     float sw = map(sin(theta+TWO_PI/num*i), -1, 1, .25, 5);
     strokeWeight(sw);
     triangle(width/2, height/2-sz, width/2-sz*0.7, height/2+sz/2, width/2+sz*0.7, height/2+sz/2);

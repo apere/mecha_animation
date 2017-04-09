@@ -2,7 +2,7 @@
 void setup() {
   size(1000, 800);
 }
-int w = 1000, N=20, r=0;
+int w = 800, N=25, r=0;
 float t=0, k=0;
 void draw() {
   background(#000000);

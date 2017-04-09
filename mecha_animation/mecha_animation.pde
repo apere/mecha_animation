@@ -4,9 +4,13 @@ float rX, rY, rW, rH, rX1, rY1, rW1, rH1;
 
 int lilFrame, lilFrame2;
 int heightFrame;
+int genericStrokeWeight = 4;
 
 int rSpeed = 3;
 float[] offset = new float[313];
+
+int num4 =100;
+float step4, sz4, offSet4, theta4;
 
 PGraphics[] pg;
 PImage output, output2;
@@ -15,6 +19,11 @@ int maskWidth;
 
 float maskLoc1, maskLoc2;
 
+float angle3;
+float rX3;
+float rY3;
+float strokeSize3;
+
 Ball[] balls =  { 
   new Ball(100, 400, 20), 
   new Ball(700, 400, 80) 
@@ -22,15 +31,16 @@ Ball[] balls =  {
 
 
 void setup() {
-  size(800, 400, P3D);
+  size(1920,1080, P3D);
+  //fullScreen();
   smooth(8);
   
-  maskWidth = width/3;
+  maskWidth = width/12;
  
   background(0);
   
-  sequence = 1;
-  numSequence = 3;
+  sequence = 3;
+  numSequence = 5;
   
   lilFrame = 0;
   lilFrame2 = 0;
@@ -74,18 +84,18 @@ void draw() {
   maskLoc2 = ((float)mouseY/(float)height) * width;
   
   // draw each sequence image
-  drawSequence(pg[0], 0);
-  drawSequence(pg[1], 1);
   drawSequence(pg[2], 2);
+//  drawSequence(pg[3], 3);
+//  drawSequence(pg[4], 4);
   
   // crop each sequence image
-  output = pg[0].get((int)maskLoc1, 0, maskWidth, height);
-  output2 = pg[1].get((int)maskLoc2, 0, maskWidth, height);
+  output = pg[4].get((int)maskLoc1, 0, maskWidth, height);
+  output2 = pg[3].get((int)maskLoc2, 0, maskWidth, height);
   
   // draw cropped images to screen
   image(pg[2], 0, 0);
-  image(output, (int)maskLoc1, 0);
-  image(output2, (int)maskLoc2, 0);
+  //image(output, (int)maskLoc1, 0);
+  //image(output2, (int)maskLoc2, 0);
   
   
 }
@@ -107,6 +117,14 @@ void drawSequence(PGraphics pg, int sequence) {
      
    case 2: 
      drawCircles(pg);
+   break;
+   
+   case 3:
+     drawTwoCircles(pg);
+   break;
+   
+   case 4:
+     drawCircleWave(pg);
    break;
    
    default:
@@ -153,6 +171,21 @@ void chooseVal(int sequence) {
       rX1 = (width/2) - rW1/2;
       rY1 = (height/2) - rH1/2;
     break;
+    
+    case 2:
+    
+    break;
+    
+    case 3:
+      angle3 = 0;
+      rX3 = 100;
+      rX3 = 450;
+      strokeSize3 = 20;
+    break;
+    
+    case 4:
+      step4 = 150;
+    break;
       
     default:
       rX = 0;
@@ -161,6 +194,54 @@ void chooseVal(int sequence) {
       rH = 5;
     break;
   } 
+}
+
+
+void drawTwoCircles(PGraphics pg) {
+  pg.background(0,0);
+  angle3 += 0.075;
+
+  float distanceFromCenter = mouseX/2 +10;
+  //centerx = mouseX;
+  //centery = mouseY;
+  
+  rX3 = rX3 + cos(angle3);
+
+  float xPos = rX3 + cos(angle3) * distanceFromCenter;
+  float yPos = rY3 + sin(angle3) * distanceFromCenter;
+  pg.strokeWeight(genericStrokeWeight);
+  pg.fill(0,0);
+  
+
+  for (int i=800; i>strokeSize3; i-=strokeSize3*2)
+  {
+    pg.beginDraw();
+    pg.stroke(255, 250);
+    pg.ellipse (xPos, yPos, i, i);
+    pg.ellipse (yPos, xPos, i, i);
+    pg.endDraw();
+  }
+}
+
+void drawCircleWave(PGraphics pg) {
+  pg.beginDraw();
+  pg.background(0,0);
+  pg.translate(width/2, height);
+  pg.strokeWeight(genericStrokeWeight);
+  for (int i=0; i<num4; i++) {
+    
+    pg.stroke(255, 250);
+    pg.noFill();
+    sz4 = i*step4;
+    float offSet = TWO_PI/num4*i;
+    float arcEnd = map(sin(theta4+offSet),-1,1, PI, TWO_PI);
+    pg.arc(0, 0, sz4, sz4, PI, arcEnd);
+    
+  }
+
+  pg.endDraw();
+  theta4 += .0523;
+  
 }
 
 void drawLines(PGraphics pg) {
