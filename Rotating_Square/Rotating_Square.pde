@@ -1,11 +1,11 @@
 void setup() {
-  size(300, 300);
+  size(800, 800);
 }
-int w =300, N=13, r=0;
+int w = 800, N=03, r=0;
 float t=0, k=0;
 void draw() {
   background(#000000);
-  float dw = 250/N;
+  float dw = width/N;
   translate(width/2, height/2);
   noStroke();
   rectMode(CENTER);
