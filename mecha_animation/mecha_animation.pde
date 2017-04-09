@@ -1,38 +1,46 @@
 int sequence, numSequence;
 
-float rX, rY, rW, rH;
+float rX, rY, rW, rH, rX1, rY1, rW1, rH1;
 
-int lilFrame;
+int lilFrame, lilFrame2;
 int heightFrame;
 
 int rSpeed = 3;
 float[] offset = new float[313];
 
 PGraphics[] pg;
-PImage output;
+PImage output, output2;
 
 int maskWidth;
+
+float maskLoc1, maskLoc2;
 
 
 void setup() {
   size(800, 400, P2D);
   maskWidth = width/3;
+ 
   background(0);
-  sequence = 0;
-  numSequence = 2;
-  lilFrame = 0;
   
+  sequence = 1;
+  numSequence = 2;
+  
+  lilFrame = 0;
+  lilFrame2 = 0;
+  
+  // create an empty PGraphic for each sequence
   pg = new PGraphics[numSequence];
   output = createGraphics(width, height, P3D);
+  output2 = createGraphics(width, height, P3D);
   
   for(int i = 0; i < pg.length; i++) {
     pg[i] = createGraphics(width, height, P3D); 
+    chooseVal(i); // set values
   }
   
-  chooseVal();
+  heightFrame = height/rSpeed + 5; // max number for traveling from top to bottom
   
-  heightFrame = height/rSpeed + 5;
-  
+  // setup an array of values to use as temps for animation
   for(int i = 0; i < offset.length; i++){
      offset[i] = 0; 
   }
@@ -43,30 +51,44 @@ void setup() {
 
 
 void draw() {
-   println("mask width: " + maskWidth);
-  background(0);
+  
+  println("mask width: " + maskWidth);
+  
+  background(0);  // clear frame
+  
+  // *** debug sequence info ***
   println("---");
   println(sequence);
   println(pg[sequence].toString());
   println("---");
-  drawSequence(pg[sequence]);
+  // ***
   
-  output = pg[sequence].get(mouseX - maskWidth/2, 0, maskWidth, height);
-  image(output, mouseX - maskWidth/2, 0);
+  drawSequence(pg[0], 0);
+  maskLoc1 = mouseX - maskWidth/2;
+  output = pg[0].get((int)maskLoc1, 0, maskWidth, height);
+  image(output, (int)maskLoc1, 0);
+  
+  drawSequence(pg[1], 1);
+  maskLoc2 = ((float)mouseY/(float)height) * width;
+  println("yswitch : " + maskLoc2);
+  output2 = pg[1].get((int)maskLoc2, 0, maskWidth, height);
+  
+  image(output2, (int)maskLoc2, 0);
   
   
 }
 
-void reset() {
+void reset(int sequence) {
   lilFrame = 0;
+  lilFrame2 = 0;
   for(int i = 0; i < offset.length; i++){
      offset[i] = 0; 
   }
   
-  chooseVal();
+  chooseVal(sequence);
 }
 
-void drawSequence(PGraphics pg) {
+void drawSequence(PGraphics pg, int sequence) {
   pg.beginDraw();
     pg.background(0,0,0,0);
   pg.endDraw();
@@ -159,30 +181,30 @@ void drawSequence(PGraphics pg) {
        pg.fill(0,0,0,1);
        pg.strokeWeight(2);
        pg.stroke(255,0,0);
-       pg.rect(rX+offset[2], rY+offset[11], rW+offset[1], rH);
+       pg.rect(rX1+offset[22], rY1+offset[211], rW1+offset[21], rH1);
        pg.stroke(0,255,0);
-       pg.rect(rX, rY+offset[3], rW+offset[4], rH+offset[5]);
+       pg.rect(rX1, rY1+offset[23], rW1+offset[24], rH1+offset[25]);
        pg.stroke(0,0,255);
-       pg.rect(rX, rY+offset[6], rW+offset[7], rH);
+       pg.rect(rX1, rY1+offset[26], rW1+offset[27], rH1);
        pg.stroke(255,255,255);
-       pg.rect(rX+offset[8], rY, rW+offset[9], rH+offset[10]);
+       pg.rect(rX1+offset[28], rY1, rW+offset[29], rH1+offset[210]);
      pg.endDraw();
-     offset[1] = ((float)mouseX/(float)width/2)*lilFrame;
-     offset[2] = -((float)mouseY/(float)height/2)*lilFrame/8;
-     offset[3] = ((float)mouseY/(float)height/2)*lilFrame/7;
-     offset[4] = -((float)mouseX/(float)width/2)*lilFrame/6;
-     offset[5] = ((float)mouseY/(float)height/2)*lilFrame/4;
-     offset[6] = ((float)mouseX/(float)width/2)*lilFrame/5;
-     offset[7] = -((float)mouseY/(float)height/2)*lilFrame/8;
-     offset[8] = ((float)mouseY/(float)height/2)*lilFrame/9;
-     offset[9] = ((float)mouseX/(float)width/2)*lilFrame/7;
-     offset[10] = -((float)mouseY/(float)height/2)*lilFrame/9;
-     offset[11] = ((float)mouseY/(float)height/2)*lilFrame/7;
+     offset[21] = ((float)mouseX/(float)width/2)*lilFrame2;
+     offset[22] = -((float)mouseY/(float)height/2)*lilFrame2/8;
+     offset[23] = ((float)mouseY/(float)height/2)*lilFrame2/7;
+     offset[24] = -((float)mouseX/(float)width/2)*lilFrame2/6;
+     offset[25] = ((float)mouseY/(float)height/2)*lilFrame2/4;
+     offset[26] = ((float)mouseX/(float)width/2)*lilFrame2/5;
+     offset[27] = -((float)mouseY/(float)height/2)*lilFrame2/8;
+     offset[28] = ((float)mouseY/(float)height/2)*lilFrame2/9;
+     offset[29] = ((float)mouseX/(float)width/2)*lilFrame2/7;
+     offset[210] = -((float)mouseY/(float)height/2)*lilFrame2/9;
+     offset[211] = ((float)mouseY/(float)height/2)*lilFrame2/7;
      
      
-     println(lilFrame);
-     println(((float)mouseX/(float)width));
-     lilFrame++;
+     println(lilFrame2);
+ 
+     lilFrame2++;
      break;
     
   } 
@@ -193,12 +215,11 @@ void nextSequence() {
   sequence++;
   if(sequence >= numSequence) {
    sequence = 0; 
-   reset();
   }
-  reset();
+  reset(sequence);
 }
 
-void chooseVal() {
+void chooseVal(int sequence) {
   switch(sequence) {
     case 0: 
       rX = 0;
@@ -207,10 +228,10 @@ void chooseVal() {
       rH = 5;
       break;
     case 1:
-      rW = 100;
-      rH = 100;
-      rX = (width/2) - rW/2;
-      rY = (height/2) - rH/2;
+      rW1 = 100;
+      rH1 = 100;
+      rX1 = (width/2) - rW/2;
+      rY1 = (height/2) - rH/2;
       break;
       
      default:
