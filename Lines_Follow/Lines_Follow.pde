@@ -10,16 +10,16 @@ void setup()
 
 void draw()
 {
-  background(255,0,0);
+  background(0);
   noFill();
-  stroke(0,100); 
+  stroke(255,100); 
 
   
-  for(int i = 0; i < 100; i+=1.5)
+  for(int i = 0; i < 100; i+=5)
   {
   beginShape();
   vertex(0,height);
-  for(int x = 0; x < width; x+=5)
+  for(int x = 0; x < width; x+=10)
   {
     //noise always return a number between 0,1
    vertex(mouseX,mouseY-i+ (noise(x*.01, (frameCount*.01), i*.01 )*300));
