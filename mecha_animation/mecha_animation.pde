@@ -8,8 +8,11 @@ int heightFrame;
 
 int rSpeed = 3;
 
+PGraphics pg;
+
 void setup() {
   size(800, 400, P2D);
+  pg = createGraphics(width, height);
   background(0);
   sequence = 0;
   numSequence = 1;
@@ -27,12 +30,15 @@ void setup() {
 
 
 void draw() {
-  background(0);
+  
   switch(sequence) {
    case 0:
-     
-     stroke(255, 255, 255);
-     rect(rX, rY, rW, rH);
+     pg.beginDraw();
+     pg.background(0);
+     pg.stroke(255, 255, 255);
+     pg.rect(rX, rY, rW, rH);
+     pg.endDraw();
+     image(pg, 0, 0);
      
      if(tempFrame < heightFrame) {
        rY = rY - rSpeed; 
