@@ -12,20 +12,31 @@ void draw()
 {
   background(0);
   noFill();
-  stroke(255,100); 
+  stroke(255,200); 
 
   
-  for(int i = 0; i < 100; i+=5)
+  for(int i = 0; i < 100; i+=20)
   {
   beginShape();
   vertex(0,height);
-  for(int x = 0; x < width; x+=10)
-  {
+  //for(int x = 0; x < width; x+=10)
+  //{
     //noise always return a number between 0,1
-   vertex(mouseX,mouseY-i+ (noise(x*.01, (frameCount*.01), i*.01 )*300));
+   vertex(mouseX,(height/3)-i+ (noise(2*.01, (frameCount*.01), i*.01 )*300));
     
-  }
+  //}
   vertex(width, height);
+  endShape();
+  
+  beginShape();
+  vertex(0,0);
+  //for(int x = 0; x < width; x+=10)
+  //{
+    //noise always return a number between 0,1
+   vertex(mouseX,(height/3)-i+ (noise(2*.01, (frameCount*.01), i*.01 )*300));
+    
+  //}
+  vertex(width, 0);
   endShape();
   
   }  
