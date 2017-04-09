@@ -15,6 +15,11 @@ int maskWidth;
 
 float maskLoc1, maskLoc2;
 
+Ball[] balls =  { 
+  new Ball(100, 400, 20), 
+  new Ball(700, 400, 80) 
+};
+
 
 void setup() {
   size(800, 400, P3D);
@@ -78,9 +83,10 @@ void draw() {
   output2 = pg[1].get((int)maskLoc2, 0, maskWidth, height);
   
   // draw cropped images to screen
+  image(pg[2], 0, 0);
   image(output, (int)maskLoc1, 0);
   image(output2, (int)maskLoc2, 0);
-  image(pg[2], 0, 0);
+  
   
 }
 
@@ -277,8 +283,16 @@ void drawColoredRect(PGraphics pg) {
 }
 
 void drawCircles(PGraphics pg) {
-   pg.beginDraw();
-     pg.strokeWeight(0);
-     pg.ellipse(20,20,20,20);
-   pg.endDraw(); 
+  pg.beginDraw();
+    pg.background(0, 0, 0, 0);
+  pg.endDraw();
+
+  for (Ball b : balls) {
+    b.update();
+    b.display(pg);
+    b.checkBoundaryCollision();
+  }
+  
+  balls[0].checkCollision(balls[1]);
+  
 }
