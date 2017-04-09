@@ -1,16 +1,15 @@
-int num =20;
-float step, sz, offSet, theta, angle;
+int num =100;
+float step, sz, offSet, theta;
 
 void setup() {
-  size(600, 400);
-  strokeWeight(5);
-  step = 22;
+  size(1000, 600);
+  strokeWeight(1);
+  step = 40; // distance between curves
 }
 
 void draw() {
-  background(20);
-  translate(width/2, height*.75);
-  angle=0;
+  background(0);
+  translate(width/2, height);
   for (int i=0; i<num; i++) {
     stroke(255);
     noFill();
