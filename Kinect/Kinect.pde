@@ -14,7 +14,7 @@ import KinectPV2.*;
 KinectPV2 kinect;
 
 float a = 0.0;
-float inc = TWO_PI/150.0;
+float inc = TWO_PI/120.0;
 
 void setup() {
   size(1920, 1080, P3D);
@@ -28,8 +28,8 @@ void setup() {
 }
 
 void draw() {
-  background(0);
 
+  background(0);
   //image(kinect.getColorImage(), 0, 0, width, height);
 
   ArrayList<KSkeleton> skeletonArray =  kinect.getSkeletonColorMap();
@@ -44,20 +44,42 @@ void draw() {
       //fill(col);
       //stroke(col);
       //drawBody(joints);
-      
-      println("X is: "+ joints[KinectPV2.JointType_HandRight].getX());
+
+      float rightHandX = joints[KinectPV2.JointType_HandRight].getX();
+      float leftHandX = joints[KinectPV2.JointType_HandLeft].getX();
+
+      blendMode(BLEND);
+
       noFill();
       stroke(255);
-      strokeWeight(2);
-      rect(joints[KinectPV2.JointType_HandRight].getX(), 540, 300, sin(a)*300);
-      
+      strokeWeight(3);
+      rect(rightHandX, 540, 300, sin(a)*300);
+
       noFill();
       stroke(255);
-      strokeWeight(2);
-      rect(joints[KinectPV2.JointType_HandLeft].getX(), 540, 300, cos(a)*300);
-      
+      strokeWeight(3);
+      rect(leftHandX, 540, 300, cos(a)*300);
+
+      if (abs(rightHandX-leftHandX) < 400)
+      {
+        noFill();
+        stroke(255, 0, 0);
+        strokeWeight(3);
+        rect((rightHandX+leftHandX)/2+100, 540, 100, sin(a+3)*300);
+
+        noFill();
+        stroke(0, 255, 0);
+        strokeWeight(3);
+        rect((rightHandX+leftHandX)/2, 540, 300, sin(a+6)*100);
+
+        noFill();
+        stroke(0, 0, 255);
+        strokeWeight(3);
+        rect((rightHandX+leftHandX)/2-100, 540, 200, sin(a+9)*200);
+      }
+
       a = a + inc;
-      
+
       //draw different color for each hand state
       //drawHandState(joints[KinectPV2.JointType_HandRight]);
       //drawHandState(joints[KinectPV2.JointType_HandLeft]);
