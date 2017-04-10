@@ -40,13 +40,16 @@ void draw() {
     if (skeleton.isTracked()) {
       KJoint[] joints = skeleton.getJoints();
 
-      color col  = skeleton.getIndexColor();
+      //color col  = skeleton.getIndexColor();
       //fill(col);
       //stroke(col);
       //drawBody(joints);
 
       float rightHandX = joints[KinectPV2.JointType_HandRight].getX();
       float leftHandX = joints[KinectPV2.JointType_HandLeft].getX();
+      float  m = map(leftHandX, 0, 1920, 0, 1920);
+      println("Hand X: " + leftHandX);
+      println("mapping: " + m);
 
       blendMode(BLEND);
 
