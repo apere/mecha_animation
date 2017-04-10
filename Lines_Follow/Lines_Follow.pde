@@ -1,4 +1,9 @@
 float y;
+PVector[] colors= {
+    new PVector(255, 0, 0),
+    new PVector(0, 0, 255),
+    new PVector(0, 255, 0)
+  };
 
 void setup()
 {
@@ -12,17 +17,22 @@ void draw()
 {
   background(0);
   noFill();
-  stroke(255,200); 
+  //stroke(255,200); 
+  blendMode(ADD);
+  strokeWeight(4);
 
-  
-  for(int i = 0; i < 50; i+=40)
+  strokeWeight(2 - sin(.075*frameCount)*2 );
+  for(int i = 0; i < 100; i+=20)
   {
+  stroke(colors[(i+2)%colors.length].x, colors[(i+2)%colors.length].y, colors[(i+2)%colors.length].z);
   beginShape();
+  
   vertex(0,height);
   //for(int x = 0; x < width; x+=10)
   //{
     //noise always return a number between 0,1
-   vertex(mouseX,(height/3)-i+ (noise(2*.01, (frameCount*.01), i*.01 )*300));
+   float xV = (width/3)-i+ (noise(2*.0001, (frameCount*.01), i*.0001 )*100);
+   vertex(xV, mouseY);
     
   //}
   vertex(width, height);
@@ -33,7 +43,7 @@ void draw()
   //for(int x = 0; x < width; x+=10)
   //{
     //noise always return a number between 0,1
-   vertex(mouseX,(height/3)-i+ (noise(2*.01, (frameCount*.01), i*.01 )*300));
+   vertex(xV, mouseY);
     
   //}
   vertex(width, 0);

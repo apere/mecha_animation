@@ -17,6 +17,8 @@ float step4, sz4, offSet4, theta4;
 PGraphics[] pg;
 PImage output, output2;
 
+boolean[] scenePlayed;
+
 int maskWidth;
 
 float maskLoc1, maskLoc2;
@@ -27,11 +29,11 @@ float rY3;
 float strokeSize3;
 
 float sinSteps;
-int numSinSteps = 7;
+int numSinSteps = 3;
 int sinOffset;
 
 String movieFiles[] = {
- "","","","","","","stand_still.mp4"
+ "","","","","","","sin_3.mp4", "line_animation.mp4","sin_7_animated.mp4", "sin_7_animated-single.mp4", "dotted_line_animation.mp4"
 };
 
 
@@ -56,7 +58,7 @@ PVector[] colors= {
 
 
 void setup() {
-  size(1440, 800, P3D);
+  size(1920, 1080, P3D);
   //fullScreen();
   smooth(4);
   
@@ -65,19 +67,23 @@ void setup() {
   background(0);
   
   sequence = 3;
-  numSequence = 7;
+  numSequence = 11;
   
   lilFrame = 0;
   lilFrame2 = 0;
   
   // create an empty PGraphic for each sequence
   pg = new PGraphics[numSequence];
+  scenePlayed = new boolean[numSequence];
   output = createGraphics(width, height, P3D);
   output2 = createGraphics(width, height, P3D);
   
-  for(int i = 0; i < pg.length; i++) {
+  for(int i = 0; i < numSequence; i++) {
     pg[i] = createGraphics(width, height, P3D); 
-    chooseVal(i); // set values
+    scenePlayed[i] = false;
+    if(i < 6 && i >= 10) {
+      chooseVal(i); // set values
+    }
   }
   sinOffset = width + 400;
   sinSteps = (height-100)/numSinSteps;
@@ -114,14 +120,14 @@ void draw() {
 //  drawSequence(pg[3], 3);
 //  drawSequence(pg[4], 4);
  //   drawSequence(pg[5], 5);
- drawSequence(pg[6], 6);
+ drawSequence(pg[10], 10);
   
   // crop each sequence image
  // output = pg[4].get((int)maskLoc1, 0, maskWidth, height);
   //output2 = pg[3].get((int)maskLoc2, 0, maskWidth, height);
   
   // draw background image to screen
-  image(pg[6], 0, 0);
+  image(pg[10], 0, 0);
   
   // draw cropped images to screen
   //image(output, (int)maskLoc1, 0);
@@ -162,14 +168,53 @@ void drawSequence(PGraphics pg, int sequence) {
    break;
    
    case 6:
-     playMovie(pg);
+   if(!scenePlayed[sequence]) {
+     chooseVal(sequence);
+   }
+   playMovie(pg);
    break;
+   
+   case 7:
+   if(!scenePlayed[sequence]) {
+     chooseVal(sequence);
+   }
+   playMovie(pg);
+   break;
+   
+   case 8:
+   if(!scenePlayed[sequence]) {
+     chooseVal(sequence);
+   }
+   playMovie(pg);
+   break;
+   
+   case 9:
+   if(!scenePlayed[sequence]) {
+     chooseVal(sequence);
+   }
+   playMovie(pg);
+   break;
+   
+   case 10:
+   if(!scenePlayed[sequence]) {
+     chooseVal(sequence);
+   }
+   playMovie(pg);
+   break;
+   
+   case 11:
+    
+    break;
    
    default:
      // catchall, do nothing
    break;
     
-  } 
+  }
+  println(sequence);
+  if(!scenePlayed[sequence]) {
+    scenePlayed[sequence] = true;
+  }
 }
 
 // move to the next sequence 
@@ -233,6 +278,34 @@ void chooseVal(int sequence) {
       myMovie = new Movie(this, movieFiles[sequence]);
       myMovie.loop();
       println("Movie playing");
+    break;
+    
+    case 7:
+      myMovie = new Movie(this, movieFiles[sequence]);
+      myMovie.loop();
+      println("Movie playing");
+    break;
+    
+    case 8:
+      myMovie = new Movie(this, movieFiles[sequence]);
+      myMovie.loop();
+      println("Movie playing");
+    break;
+    
+    case 9:
+      myMovie = new Movie(this, movieFiles[sequence]);
+      myMovie.loop();
+      println("Movie playing");
+    break;
+    
+    case 10:
+      myMovie = new Movie(this, movieFiles[sequence]);
+      myMovie.loop();
+      println("Movie playing");
+    break;
+    
+    case 11:
+    
     break;
       
     default:
