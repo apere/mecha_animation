@@ -1,5 +1,6 @@
 import processing.video.*;
 
+
 int sequence, numSequence;
 
 float rX, rY, rW, rH, rX1, rY1, rW1, rH1;
@@ -36,8 +37,9 @@ String movieFiles[] = {
  "","","","","","","sin_3.mp4", "line_animation.mp4","sin_7_animated.mp4", "sin_7_animated-single.mp4", "dotted_line_animation.mp4"
 };
 
-
 Movie myMovie;
+
+float linesY;
 
 Ball[] balls =  { 
   new Ball(100, 400, 20), 
@@ -58,7 +60,8 @@ PVector[] colors= {
 
 
 void setup() {
-  size(1920, 1080, P3D);
+ // size(1920, 1080, P3D);
+  size(800, 500, P3D);
   //fullScreen();
   smooth(4);
   
@@ -67,7 +70,7 @@ void setup() {
   background(0);
   
   sequence = 3;
-  numSequence = 11;
+  numSequence = 12;
   
   lilFrame = 0;
   lilFrame2 = 0;
@@ -81,10 +84,12 @@ void setup() {
   for(int i = 0; i < numSequence; i++) {
     pg[i] = createGraphics(width, height, P3D); 
     scenePlayed[i] = false;
-    if(i < 6 && i >= 10) {
+    if(i < 6 && i > 10) {
       chooseVal(i); // set values
     }
   }
+  
+  linesY=height/2;
   sinOffset = width + 400;
   sinSteps = (height-100)/numSinSteps;
   heightFrame = height/rSpeed + 5; // max number for traveling from top to bottom
@@ -99,15 +104,7 @@ void setup() {
 
 
 
-void draw() {
-  // *** debug sequence info ***
-  //println("---");
-  //println("mask width: " + maskWidth);
-  //println(sequence);
-  //println(pg[sequence].toString());
-  //println("---");
-  // ***
-  
+void draw() {  
   // clear frame
   background(0);  
   
@@ -115,25 +112,25 @@ void draw() {
   maskLoc1 = mouseX - maskWidth/2;
   maskLoc2 = ((float)mouseY/(float)height) * width;
   
-  // draw each sequence image
+  int curSeq = 6;
+  
+ // draw each sequence image
  // drawSequence(pg[2], 2);
-//  drawSequence(pg[3], 3);
-//  drawSequence(pg[4], 4);
+ //  drawSequence(pg[3], 3);
+ //  drawSequence(pg[4], 4);
  //   drawSequence(pg[5], 5);
- drawSequence(pg[10], 10);
+ drawSequence(pg[curSeq], curSeq);
   
   // crop each sequence image
  // output = pg[4].get((int)maskLoc1, 0, maskWidth, height);
   //output2 = pg[3].get((int)maskLoc2, 0, maskWidth, height);
   
   // draw background image to screen
-  image(pg[10], 0, 0);
+  image(pg[curSeq], 0, 0);
   
   // draw cropped images to screen
   //image(output, (int)maskLoc1, 0);
   //image(output2, (int)maskLoc2, 0);
-  
-  
 }
 
 // chooses the sequence to draw
@@ -203,15 +200,26 @@ void drawSequence(PGraphics pg, int sequence) {
    break;
    
    case 11:
-    
-    break;
+     drawFollowLines(pg); 
+   break;
+   
+   case 12:
+   
+   break;
+   
+   case 13:
+   
+   break;
+   
+   case 14:
+   
+   break;
    
    default:
      // catchall, do nothing
    break;
     
   }
-  println(sequence);
   if(!scenePlayed[sequence]) {
     scenePlayed[sequence] = true;
   }
@@ -307,6 +315,18 @@ void chooseVal(int sequence) {
     case 11:
     
     break;
+    
+    case 12:
+    
+    break;
+    
+    case 13:
+    
+    break;
+    
+    case 14:
+    
+    break;
       
     default:
       rX = 0;
@@ -321,8 +341,33 @@ void playMovie(PGraphics pg) {
   pg.beginDraw();
     pg.image(myMovie, 0, 0);
   pg.endDraw();
+}
+
+void drawFollowLines(PGraphics pg) {
+  pg.beginDraw();
+  pg.background(0,0);
+  pg.noFill();
+  pg.stroke(255,155*sin(.025*frameCount) + 200); 
+  pg.strokeWeight(2.5 - sin(.075*frameCount)*2 );
   
+  for(int i = 0; i < 100; i+=100)
+  {
+    float xV = (width/3)-i+ (noise(2*.0001, (frameCount*.01), i*.0001 )*100); //noise always return a number between 0,1
+ 
+   for(int k = 0; k < 30; k+=5) {
+    pg.beginShape();
+      pg.vertex(abs(sin(.0025*frameCount))*width,1.2*height);
+      pg.vertex(xV + k, mouseY+k );
+      pg.vertex(1.2*width + k*sin(frameCount*.005), 1.2*abs(sin(.0025*frameCount))*height);
   
+      pg.vertex(abs(sin(.0025*frameCount+100))*width,-50);
+      pg.vertex(xV+ k, mouseY+k);   
+      pg.vertex(1.2*k* sin(frameCount*.005) - 50, 1.2*abs(sin(.0025*frameCount+100))*height);
+    pg.endShape();
+   }
+    }  
+  
+  pg.endDraw();
 }
 
 
@@ -350,17 +395,16 @@ void drawSineColors(PGraphics pg) {
   
   
   pg.endDraw();
- 
-  
-  
   
 }
 
 void drawTwoCircles(PGraphics pg) {
+  pg.beginDraw();
+  
   pg.background(0,0);
   angle3 += 0.075;
 
-  float distanceFromCenter = mouseX/2 +10;
+  float distanceFromCenter = mouseY/2 +10;
   //centerx = mouseX;
   //centery = mouseY;
   
@@ -368,18 +412,19 @@ void drawTwoCircles(PGraphics pg) {
 
   float xPos = rX3 + cos(angle3) * distanceFromCenter;
   float yPos = rY3 + sin(angle3) * distanceFromCenter;
+  println("X: " + xPos + " Y: " + yPos);
+ 
   pg.strokeWeight(genericStrokeWeight);
   pg.fill(0,0);
-  
 
-  for (int i=800; i>strokeSize3; i-=strokeSize3*2)
+  for (int i=0; i>strokeSize3; i-=strokeSize3*2)
   {
-    pg.beginDraw();
     pg.stroke(255, 250);
     pg.ellipse (xPos, yPos, i, i);
-    pg.ellipse (yPos, xPos, i, i);
-    pg.endDraw();
+    pg.ellipse (yPos, xPos, i, i); 
   }
+  
+  pg.endDraw();
 }
 
 void drawCircleWave(PGraphics pg) {
@@ -405,8 +450,9 @@ void drawCircleWave(PGraphics pg) {
 
 void drawLines(PGraphics pg) {
   pg.beginDraw();
-    pg.rect(rX, rY, rW, rH);
-  pg.endDraw();
+  pg.fill(255);
+  pg.rect(rX, rY, rW, rH);
+   
  
  if(lilFrame < heightFrame) { // rising white
    rY = rY - rSpeed; 
@@ -421,67 +467,57 @@ void drawLines(PGraphics pg) {
  }else if(lilFrame >= heightFrame*3.5 && lilFrame < heightFrame*3.75) {  } // pause 
  else if(lilFrame >= heightFrame*3.75 && lilFrame < heightFrame*4) { // 2 lines move outward
    //rY = rY - rSpeed;
-   pg.beginDraw();
     pg.stroke(255, 255, 255);
     pg.rect(rX, rY+offset[0], rW, rH);
     pg.rect(rX, rY-offset[0], rW, rH);
-   pg.endDraw();
    offset[0]++;
  }else if(lilFrame >= heightFrame*4 && lilFrame < heightFrame*5) {  // pause 
-   pg.beginDraw();
     pg.stroke(255, 255, 255);
     pg.rect(rX, rY+offset[0], rW, rH);
     pg.rect(rX, rY-offset[0], rW, rH);
-   pg.endDraw();
  }
  else if(lilFrame >= heightFrame*5 && lilFrame < heightFrame*5.25) {  // add two more lines outward
-   pg.beginDraw();
     pg.stroke(255, 255, 255);
     pg.rect(rX, rY+offset[0], rW, rH);
     pg.rect(rX, rY-offset[0], rW, rH);
     pg.rect(rX, rY+offset[0] + offset[1], rW, rH);
     pg.rect(rX, rY-offset[0]-offset[1], rW, rH);
-   pg.endDraw();
    offset[1]++;
  } 
   else if(lilFrame >= heightFrame*5.25 && lilFrame < heightFrame*6.25) {  // pause
-   pg.beginDraw();
     pg.stroke(255, 255, 255);
     pg.rect(rX, rY+offset[0], rW, rH);
     pg.rect(rX, rY-offset[0], rW, rH);
     pg.rect(rX, rY+offset[0]+offset[1], rW, rH);
     pg.rect(rX, rY-offset[0]-offset[1], rW, rH);
-   pg.endDraw();
   }
   else if(lilFrame >= heightFrame*6.25 && lilFrame < heightFrame*8) {  // outward & grow
-   pg.beginDraw();
     pg.stroke(255, 255, 255);
     pg.rect(rX, rY+offset[0], rW, rH + offset[3]);
     pg.rect(rX, rY-offset[0], rW, rH + offset[3]);
     pg.rect(rX, rY+offset[0]+offset[1], rW, rH+offset[3]);
     pg.rect(rX, rY-offset[0]-offset[1], rW, rH+offset[3]);
-   pg.endDraw();
    offset[0] -= 1;
    offset[1] -= 1;
    offset[3] ++;
   }else if(lilFrame >= heightFrame*8 && lilFrame < heightFrame*8.75) {  // outward & grow
-   pg.beginDraw();
     pg.stroke(255, 255, 255);
     pg.rect(rX, rY+offset[0], rW, rH + offset[3]);
     pg.rect(rX, rY-offset[0], rW, rH + offset[3]);
     pg.rect(rX, rY+offset[0]+offset[1], rW, rH+offset[3]);
     pg.rect(rX, rY-offset[0]-offset[1], rW, rH+offset[3]);
-   pg.endDraw();
    offset[0] -= 10;
    offset[3] += 6;
   }
  
  
- 
  else {
-   nextSequence();
+   //nextSequence();
+   reset(0);
  }
  lilFrame++;
+ 
+  pg.endDraw();
 }
 
 void drawColoredRect(PGraphics pg) {
