@@ -1,3 +1,5 @@
+import processing.video.*;
+
 int sequence, numSequence;
 
 float rX, rY, rW, rH, rX1, rY1, rW1, rH1;
@@ -24,23 +26,46 @@ float rX3;
 float rY3;
 float strokeSize3;
 
+float sinSteps;
+int numSinSteps = 7;
+int sinOffset;
+
+String movieFiles[] = {
+ "","","","","","","stand_still.mp4"
+};
+
+
+Movie myMovie;
+
 Ball[] balls =  { 
   new Ball(100, 400, 20), 
   new Ball(700, 400, 80) 
 };
 
+//PVector[] colors= {
+//    new PVector(255, 255, 0),
+//    new PVector(0, 255, 255),
+//    new PVector(255, 0, 255)
+//  };
+
+PVector[] colors= {
+    new PVector(255, 0, 0),
+    new PVector(0, 255, 0),
+    new PVector(0, 0, 255)
+  };
+
 
 void setup() {
-  size(1920,1080, P3D);
+  size(1440, 800, P3D);
   //fullScreen();
-  smooth(8);
+  smooth(4);
   
   maskWidth = width/12;
  
   background(0);
   
   sequence = 3;
-  numSequence = 5;
+  numSequence = 7;
   
   lilFrame = 0;
   lilFrame2 = 0;
@@ -54,7 +79,8 @@ void setup() {
     pg[i] = createGraphics(width, height, P3D); 
     chooseVal(i); // set values
   }
-  
+  sinOffset = width + 400;
+  sinSteps = (height-100)/numSinSteps;
   heightFrame = height/rSpeed + 5; // max number for traveling from top to bottom
   
   // setup an array of values to use as temps for animation
@@ -69,11 +95,11 @@ void setup() {
 
 void draw() {
   // *** debug sequence info ***
-  println("---");
-  println("mask width: " + maskWidth);
-  println(sequence);
-  println(pg[sequence].toString());
-  println("---");
+  //println("---");
+  //println("mask width: " + maskWidth);
+  //println(sequence);
+  //println(pg[sequence].toString());
+  //println("---");
   // ***
   
   // clear frame
@@ -84,16 +110,20 @@ void draw() {
   maskLoc2 = ((float)mouseY/(float)height) * width;
   
   // draw each sequence image
-  drawSequence(pg[2], 2);
+ // drawSequence(pg[2], 2);
 //  drawSequence(pg[3], 3);
 //  drawSequence(pg[4], 4);
+ //   drawSequence(pg[5], 5);
+ drawSequence(pg[6], 6);
   
   // crop each sequence image
-  output = pg[4].get((int)maskLoc1, 0, maskWidth, height);
-  output2 = pg[3].get((int)maskLoc2, 0, maskWidth, height);
+ // output = pg[4].get((int)maskLoc1, 0, maskWidth, height);
+  //output2 = pg[3].get((int)maskLoc2, 0, maskWidth, height);
+  
+  // draw background image to screen
+  image(pg[6], 0, 0);
   
   // draw cropped images to screen
-  image(pg[2], 0, 0);
   //image(output, (int)maskLoc1, 0);
   //image(output2, (int)maskLoc2, 0);
   
@@ -125,6 +155,14 @@ void drawSequence(PGraphics pg, int sequence) {
    
    case 4:
      drawCircleWave(pg);
+   break;
+   
+   case 5:
+     drawSineColors(pg);
+   break;
+   
+   case 6:
+     playMovie(pg);
    break;
    
    default:
@@ -186,6 +224,16 @@ void chooseVal(int sequence) {
     case 4:
       step4 = 150;
     break;
+    
+    case 5:
+      
+    break;
+    
+    case 6:
+      myMovie = new Movie(this, movieFiles[sequence]);
+      myMovie.loop();
+      println("Movie playing");
+    break;
       
     default:
       rX = 0;
@@ -196,6 +244,44 @@ void chooseVal(int sequence) {
   } 
 }
 
+void playMovie(PGraphics pg) {
+  pg.beginDraw();
+    pg.image(myMovie, 0, 0);
+  pg.endDraw();
+  
+  
+}
+
+
+void drawSineColors(PGraphics pg) {
+  pg.beginDraw();
+  pg.background(0,0);
+  //pg.blendMode(BLEND);
+  pg.blendMode(SCREEN);
+  
+  pg.noFill();
+  pg.strokeWeight(4);
+  for(int k = 0; k < numSinSteps; k++) {
+    for(int i = 0; i < 3; i++) {
+      pg.stroke(colors[i].x, colors[i].y, colors[i].z);
+      pg.beginShape();
+      for(int w = - 40 + sinOffset + k*50 + (int)offset[40+k] ; w < (width + sinSteps*(k)); w += 5) {
+        float h = height - 100 - (sinSteps*k);
+        h += 10 * sin((w) * 0.03 + (frameCount+100) * 0.07 + i * TWO_PI / 3) * pow(abs(sin(w * 0.001 + (frameCount+75) * 0.02)), 5);
+        pg.curveVertex(w-(sinSteps*k), h);
+      }    
+      pg.endShape();
+    }
+    offset[40+k]-=5;
+  }
+  
+  
+  pg.endDraw();
+ 
+  
+  
+  
+}
 
 void drawTwoCircles(PGraphics pg) {
   pg.background(0,0);
@@ -376,4 +462,8 @@ void drawCircles(PGraphics pg) {
   
   balls[0].checkCollision(balls[1]);
   
+}
+
+void movieEvent(Movie m) {
+  m.read();
 }

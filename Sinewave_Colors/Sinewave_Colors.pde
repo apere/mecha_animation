@@ -28,6 +28,7 @@ void draw() {
   } else {
     background(0);
     blendMode(SCREEN);
+    
   }
   noFill();
   strokeWeight(4);
