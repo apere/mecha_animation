@@ -15,7 +15,7 @@ float rX3;
 float rY3;
 float strokeSize3;
 
-int num4 =100;
+int num4 = 20;
 float step4, sz4, offSet4, theta4;
 
 KinectPV2 kinect;
@@ -31,6 +31,7 @@ float[] offset = new float[313];
 
 int maskHeight;
 float maskLoc1, maskLoc2, linesY;
+float sinOffset1 = 0;
 
 String movieFiles[] = {
   "", "", "", "", "", "", "sin_3.mp4", "line_animation.mp4", "sin_7_animated.mp4", "sin_7_animated-single.mp4", "dotted_line_animation.mp4"
@@ -49,11 +50,11 @@ int numSinSteps = 3;
 int sinOffset;
 
 float rightHand, leftHand;
-
+int min = 20000;
+int max = 0;
 void setup() {
-  size(1280, 720, P3D);
-  String[] args = {"--location=0,0", "second"};
-  
+  //size(1280, 720, P3D);
+  fullScreen(P3D, 1);
 
   rX = 0;
   rY = height;
@@ -67,10 +68,10 @@ void setup() {
   rX3 = 100;
   rX3 = 450;
   strokeSize3 = 20;
-  step4 = 150;
+  step4 = 250;
 
   sequence = 3;
-  numSequence = 12;
+  numSequence = 14;
 
   maskHeight = height/8;
 
@@ -103,35 +104,39 @@ void setup() {
   kinect.enableSkeletonColorMap(true);
   kinect.enableColorImg(true);
   kinect.init();
-  
-  second sa = new second(1280, 720, this);
-  PApplet.runSketch(args, sa);
-  println("*****" + this.sequence);
+
+  //second sa = new second(1280, 720, this);
+  //PApplet.runSketch(args, sa);
+  //println("*****" + this.sequence);
 }
 
 
 void draw() {  
   // clear frame
+  if (frameCount ==1)
+    frame.setLocation(0, 0);
+
   background(0);  
 
   getKinectHands();
 
   // set X value for the masked areas
   maskLoc1 = leftHand - maskHeight/2;
-  maskLoc2 = ((float)mouseY/(float)height) * width;
+  maskLoc2 = ((float)rightHand/(float)height) * width;
 
   int curSeq = 6;
 
   // draw each sequence image
   // drawSequence(pg[2], 2);
   //  drawSequence(pg[3], 3);
-  //  drawSequence(pg[4], 4);
-  //  drawSequence(pg[5], 5);
+    //drawSequence(pg[12], 12);
+   // drawSequence(pg[13], 13);
   drawSequence(pg[curSeq], curSeq);
 
+
   // crop each sequence image
-  output = pg[6].get(0, (int)maskLoc1, width, maskHeight);
-  //output2 = pg[3].get((int)maskLoc2, 0, maskHeight, height);
+ // output = pg[12].get(0, (int)maskLoc1, width, maskHeight);
+//  output2 = pg[13].get((int)maskLoc2, 0, maskHeight, height);
 
   // draw background image to screen
   image(pg[curSeq], 0, 0);
@@ -151,6 +156,29 @@ void getKinectHands() {
 
       leftHand = joints[KinectPV2.JointType_HandLeft].getX();
       rightHand = joints[KinectPV2.JointType_HandRight].getX();
+      
+      println("---");
+      println(skeleton);
+      println("leftHand is: "+ leftHand);
+      println("rightHand is: "+ rightHand);
+      println("-----");
+      
+      if (leftHand >= max) {
+        max = (int)leftHand;
+        println("max: " + max);
+      }
+      if (leftHand <= min) {
+        min = (int)leftHand;
+        println("min: " + min);
+      }
+      if (rightHand >= max) {
+        max = (int)rightHand;
+        println("max: " + max);
+      }
+      if (rightHand <= min) {
+        min = (int)rightHand;
+        println("min: " + min);
+      }
     }
   }
 }
@@ -225,11 +253,11 @@ void drawSequence(PGraphics pg, int sequence) {
     break;
 
   case 12:
-
+        drawSolidColor(pg, 0, 255, 255);
     break;
 
   case 13:
-
+        drawSolidColor(pg, 255,0,255);
     break;
 
   case 14:
@@ -285,7 +313,7 @@ void chooseVal(int sequence) {
     break;
 
   case 4:
-    step4 = 150;
+    step4 = 250;
     break;
 
   case 5:
@@ -347,19 +375,46 @@ void chooseVal(int sequence) {
   }
 }
 
-void playMovie(PGraphics pg) {
+void drawSolidColor(PGraphics pg, int r, int g, int b) {
   pg.beginDraw();
-  pg.image(myMovie, 0, 0);
+    pg.fill(r, g, b);
+    pg.noStroke();
+    pg.rect(0,0, width, height);
+  pg.endDraw();
+}
+
+void playMovie(PGraphics pg) {
+  int interval = 10;
+  int maxOff = 400;
+  pg.beginDraw();
+  //pg.image(myMovie, 0, 0);
+  
+  if (abs(leftHand-rightHand) > 100){
+    sinOffset1+=interval;
+    if(sinOffset1 > maxOff) {
+      sinOffset1 = maxOff;
+    }
+  }
+  else {
+    sinOffset1-=interval;
+    if(sinOffset1 < -maxOff) {
+       sinOffset1 = -maxOff; 
+    }
+  }
+  
+  pg.image(myMovie, 0,-sinOffset1/2, myMovie.width, myMovie.height + sinOffset1);
   pg.endDraw();
 }
 
 void drawFollowLines(PGraphics pg) {
+  float leftHand2= map(leftHand, 900, 1250, 400, height);
+  float rightHand2 = map(rightHand, 900, 1250, 200, width);
   pg.beginDraw();
   pg.background(0, 0);
   pg.noFill();
   pg.stroke(255, 155*sin(.025*frameCount) + 200); 
   pg.strokeWeight(2.5 - sin(.075*frameCount)*2 );
-
+  
   for (int i = 0; i < 100; i+=100)
   {
     float xV = (width/3)-i+ (noise(2*.0001, (frameCount*.01), i*.0001 )*100); //noise always return a number between 0,1
@@ -367,11 +422,12 @@ void drawFollowLines(PGraphics pg) {
     for (int k = 0; k < 30; k+=5) {
       pg.beginShape();
       pg.vertex(abs(sin(.0025*frameCount))*width, 1.2*height);
-      pg.vertex(xV + k, mouseY+k );
+      pg.vertex(rightHand2 + xV + k, leftHand2+k );
+
       pg.vertex(1.2*width + k*sin(frameCount*.005), 1.2*abs(sin(.0025*frameCount))*height);
 
       pg.vertex(abs(sin(.0025*frameCount+100))*width, -50);
-      pg.vertex(xV+ k, mouseY+k);   
+      pg.vertex(rightHand2 + xV+ k, leftHand2+k);   
       pg.vertex(1.2*k* sin(frameCount*.005) - 50, 1.2*abs(sin(.0025*frameCount+100))*height);
       pg.endShape();
     }
